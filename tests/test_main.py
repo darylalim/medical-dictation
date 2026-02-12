@@ -22,7 +22,10 @@ class TestTranscribe:
     def test_returns_response_object(self, mock_deepgram_cls, env_with_api_key):
         response = main.transcribe(FAKE_AUDIO)
 
-        assert response.results.channels[0].alternatives[0].transcript == "Life moves pretty fast."
+        assert (
+            response.results.channels[0].alternatives[0].transcript
+            == "Life moves pretty fast."
+        )
         assert response.results.channels[0].alternatives[0].confidence == 0.98
         assert response.metadata.duration == 3.5
 

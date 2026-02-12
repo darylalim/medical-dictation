@@ -18,7 +18,9 @@ def transcribe(audio_bytes: bytes):
 
 st.title("Medical Dictation Transcriber")
 
-uploaded_file = st.file_uploader("Upload an audio file", type=["wav", "mp3", "m4a", "flac", "ogg"])
+uploaded_file = st.file_uploader(
+    "Upload an audio file", type=["wav", "mp3", "m4a", "flac", "ogg"]
+)
 
 if st.button("Transcribe", disabled=uploaded_file is None):
     try:
@@ -44,4 +46,9 @@ if "response" in st.session_state:
     st.subheader("Transcript")
     st.text_area("", value=result.transcript, height=300, disabled=True)
 
-    st.download_button("Download JSON", data=json_str, file_name="transcript.json", mime="application/json")
+    st.download_button(
+        "Download JSON",
+        data=json_str,
+        file_name="transcript.json",
+        mime="application/json",
+    )
