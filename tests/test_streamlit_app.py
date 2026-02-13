@@ -1,6 +1,6 @@
 import pytest
 
-import main
+import streamlit_app
 
 FAKE_AUDIO = b"fake-audio-data"
 
@@ -9,18 +9,20 @@ class TestTranscribe:
     def test_calls_deepgram_with_correct_args(
         self, mock_deepgram_cls, env_with_api_key
     ):
-        main.transcribe(FAKE_AUDIO)
+        streamlit_app.transcribe(FAKE_AUDIO)
 
         mock_deepgram_cls.assert_called_once_with(api_key="test-key")
         mock_client = mock_deepgram_cls.return_value
         mock_client.listen.v1.media.transcribe_file.assert_called_once_with(
             request=FAKE_AUDIO,
-            model="nova-3",
+            model="nova-3-medical",
             smart_format=True,
+            numerals=True,
+            profanity_filter=True,
         )
 
     def test_returns_response_object(self, mock_deepgram_cls, env_with_api_key):
-        response = main.transcribe(FAKE_AUDIO)
+        response = streamlit_app.transcribe(FAKE_AUDIO)
 
         assert (
             response.results.channels[0].alternatives[0].transcript
@@ -33,4 +35,4 @@ class TestTranscribe:
         monkeypatch.delenv("DEEPGRAM_API_KEY", raising=False)
 
         with pytest.raises(KeyError, match="DEEPGRAM_API_KEY"):
-            main.transcribe(FAKE_AUDIO)
+            streamlit_app.transcribe(FAKE_AUDIO)

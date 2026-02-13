@@ -5,7 +5,7 @@ import pytest
 
 @pytest.fixture
 def mock_deepgram_cls():
-    with patch("main.DeepgramClient") as mock_cls:
+    with patch("streamlit_app.DeepgramClient") as mock_cls:
         mock_response = MagicMock()
         mock_response.model_dump_json.return_value = '{"results": "transcribed"}'
 
