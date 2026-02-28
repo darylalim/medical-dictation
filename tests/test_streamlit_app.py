@@ -60,7 +60,9 @@ class TestProcessInputs:
 
         streamlit_app._process_inputs([("bad.wav", b"bad"), ("good.wav", b"good")])
 
-        mock_st.error.assert_called_once_with("Transcription failed for bad.wav: API error")
+        mock_st.error.assert_called_once_with(
+            "Transcription failed for bad.wav: API error"
+        )
         responses = mock_st.session_state["responses"]
         assert len(responses) == 1
         assert responses[0] == ("good.wav", good_response)

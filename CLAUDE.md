@@ -22,24 +22,26 @@ Single-file Streamlit app (`streamlit_app.py`):
 1. Loads `DEEPGRAM_API_KEY` from `.env` via python-dotenv
 2. `_TRANSCRIBE_OPTS` — shared dict of Deepgram API options (model, smart format, numerals, profanity filter)
 3. `_process_inputs(files)` — creates one shared `DeepgramClient` for a batch, transcribes each file, handles errors via `st.error`, stores results in `st.session_state["responses"]`
-4. UI with two input tabs:
+4. `_process_urls(urls)` — same pattern as `_process_inputs` but calls `transcribe_url` for remote audio URLs
+5. UI with three input tabs:
    - **Upload File** — up to 100 files, max 2 GB each (wav, mp3, m4a, flac, ogg)
    - **Record Audio** — microphone via `st.audio_input`, max 10 minutes
-5. Displays per-file metrics (confidence, duration, word count, language), transcript, and JSON download
+   - **Remote URL** — transcribe from HTTP/HTTPS URLs, up to 100 URLs per batch
+6. Displays per-file metrics (confidence, duration, word count, language), transcript, and JSON download
 
 ## Testing
 
 Tests mock `DeepgramClient` — no real API calls.
 
 - `tests/conftest.py` — shared fixtures (`mock_deepgram_cls`, `env_with_api_key`, `mock_st`)
-- `tests/test_streamlit_app.py` — tests for `_process_inputs()`:
+- `tests/test_streamlit_app.py` — tests for `_process_inputs()` and `_process_urls()`:
   - Client reuse across a batch
   - Transcribe options passed correctly
   - Session state storage
   - Missing API key error
   - Partial and total batch failure
-  - Multi-file success ordering
-  - Error message format (filename + exception)
+  - Multi-file/URL success ordering
+  - Error message format (filename/URL + exception)
 
 ## Dependencies
 
