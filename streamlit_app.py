@@ -1,5 +1,5 @@
 import io
-import os  # noqa: F401 — needed by upcoming Task 2 for os.environ.get
+import os
 import wave
 
 import streamlit as st
@@ -63,6 +63,12 @@ def _parse_urls(text: str) -> tuple[list[str], list[str]]:
 
 st.title("Medical Dictation Transcriber")
 
+api_key = st.sidebar.text_input(
+    "Deepgram API Key",
+    type="password",
+    value=os.environ.get("DEEPGRAM_API_KEY", ""),
+)
+
 tab_record, tab_url, tab_upload = st.tabs(["Record Audio", "Remote URL", "Upload File"])
 
 with tab_upload:
@@ -71,7 +77,11 @@ with tab_upload:
         type=["wav", "mp3", "m4a", "flac", "ogg"],
         accept_multiple_files=True,
     )
-    if st.button("Transcribe", disabled=not uploaded_files, key="transcribe_upload"):
+    if st.button(
+        "Transcribe",
+        disabled=not uploaded_files or not api_key,
+        key="transcribe_upload",
+    ):
         if len(uploaded_files) > MAX_UPLOADS:
             st.error(f"Too many files. Maximum is {MAX_UPLOADS} per batch.")
         else:
@@ -84,12 +94,16 @@ with tab_upload:
                 if f.size <= MAX_FILE_SIZE
             ]
             if valid:
-                _process_inputs(valid)
+                _process_inputs(api_key, valid)
 
 with tab_record:
     recording = st.audio_input("Record a dictation")
     if (
-        st.button("Transcribe", disabled=recording is None, key="transcribe_record")
+        st.button(
+            "Transcribe",
+            disabled=recording is None or not api_key,
+            key="transcribe_record",
+        )
         and recording is not None
     ):
         audio_bytes = recording.getvalue()
@@ -98,14 +112,16 @@ with tab_record:
         if duration > MAX_RECORDING_SECONDS:
             st.error("Recording exceeds the 10-minute limit.")
         else:
-            _process_inputs([("Recording", audio_bytes)])
+            _process_inputs(api_key, [("Recording", audio_bytes)])
 
 with tab_url:
     url_text = st.text_area(
         "Enter audio file URLs (one per line)",
         placeholder="https://example.com/audio.wav",
     )
-    if st.button("Transcribe", disabled=not url_text.strip(), key="transcribe_url"):
+    if st.button(
+        "Transcribe", disabled=not url_text.strip() or not api_key, key="transcribe_url"
+    ):
         valid, invalid = _parse_urls(url_text)
         if invalid:
             st.error(f"Invalid URL(s): {', '.join(invalid)}")
@@ -121,7 +137,7 @@ with tab_url:
                 st.warning(
                     f"Unrecognized audio extension (supported: wav, mp3, m4a, flac, ogg): {', '.join(no_ext)}"
                 )
-            _process_urls(valid)
+            _process_urls(api_key, valid)
 
 for name, response in st.session_state.get("responses", []):
     channel = response.results.channels[0]
