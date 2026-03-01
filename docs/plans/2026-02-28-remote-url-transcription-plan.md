@@ -274,7 +274,7 @@ tab_upload, tab_record = st.tabs(["Upload File", "Record Audio"])
 to:
 
 ```python
-tab_upload, tab_record, tab_url = st.tabs(["Upload File", "Record Audio", "Remote URL"])
+tab_record, tab_url, tab_upload = st.tabs(["Record Audio", "Remote URL", "Upload File"])
 ```
 
 **Step 2: Add the Remote URL tab block after the `with tab_record:` block**
@@ -331,4 +331,4 @@ Expected: No errors (warnings are acceptable)
 **Step 4: Manual smoke test**
 
 Run: `uv run streamlit run streamlit_app.py`
-Verify: Three tabs visible — "Upload File", "Record Audio", "Remote URL". The URL tab has a text area and a Transcribe button.
+Verify: Three tabs visible — "Record Audio", "Remote URL", "Upload File". The URL tab has a text area and a Transcribe button.

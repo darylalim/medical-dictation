@@ -13,8 +13,9 @@ Streamlit web app that transcribes medical dictation using Deepgram's Nova-3 Med
 uv run streamlit run streamlit_app.py
 ```
 
-- **Upload File** — up to 100 audio files (wav, mp3, m4a, flac, ogg; max 2 GB each)
 - **Record Audio** — record from microphone (max 10 minutes)
+- **Remote URL** — transcribe from HTTP/HTTPS URLs (up to 100 per batch)
+- **Upload File** — up to 100 audio files (wav, mp3, m4a, flac, ogg; max 2 GB each)
 
 Transcriptions use smart formatting, numerals conversion, and profanity filtering. Each result displays confidence, duration, word count, and detected language, along with the full transcript and a JSON download.
 

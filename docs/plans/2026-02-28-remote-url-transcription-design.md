@@ -12,7 +12,7 @@ Rejected alternative: download audio locally then reuse `transcribe_file`. Rejec
 
 ## UI
 
-- Third tab **"Remote URL"** alongside "Upload File" and "Record Audio"
+- Tab **"Remote URL"** between "Record Audio" and "Upload File" (tab order: Record Audio, Remote URL, Upload File)
 - `st.text_area` for entering URLs, one per line
 - "Transcribe" button, disabled when text area is empty
 - `MAX_UPLOADS` (100) limit on number of URLs
@@ -23,7 +23,7 @@ Rejected alternative: download audio locally then reuse `transcribe_file`. Rejec
 New function `_process_urls(urls: list[str])`:
 
 - Same pattern as `_process_inputs`: shared `DeepgramClient`, loop, error handling, session state storage
-- Calls `client.listen.v1.media.transcribe_url` with `{"url": url}` and same `_TRANSCRIBE_OPTS`
+- Calls `client.listen.v1.media.transcribe_url` with `url=url` and same `_TRANSCRIBE_OPTS`
 - Per-URL failure: `st.error` and continue
 - Stores results as `(url, response)` tuples in `st.session_state["responses"]`
 

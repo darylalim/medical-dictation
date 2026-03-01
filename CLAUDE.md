@@ -24,9 +24,9 @@ Single-file Streamlit app (`streamlit_app.py`):
 3. `_process_inputs(files)` — creates one shared `DeepgramClient` for a batch, transcribes each file, handles errors via `st.error`, stores results in `st.session_state["responses"]`
 4. `_process_urls(urls)` — same pattern as `_process_inputs` but calls `transcribe_url` for remote audio URLs
 5. UI with three input tabs:
-   - **Upload File** — up to 100 files, max 2 GB each (wav, mp3, m4a, flac, ogg)
    - **Record Audio** — microphone via `st.audio_input`, max 10 minutes
    - **Remote URL** — transcribe from HTTP/HTTPS URLs, up to 100 URLs per batch
+   - **Upload File** — up to 100 files, max 2 GB each (wav, mp3, m4a, flac, ogg)
 6. Displays per-file metrics (confidence, duration, word count, language), transcript, and JSON download
 
 ## Testing
