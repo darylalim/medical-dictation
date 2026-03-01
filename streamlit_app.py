@@ -1,5 +1,5 @@
 import io
-import os
+import os  # noqa: F401 — needed by upcoming Task 2 for os.environ.get
 import wave
 
 import streamlit as st
@@ -22,13 +22,10 @@ _TRANSCRIBE_OPTS = dict(
 )
 
 
-def _transcribe_batch(items: list[tuple[str, dict[str, object]]], method: str):
+def _transcribe_batch(
+    api_key: str, items: list[tuple[str, dict[str, object]]], method: str
+):
     """Transcribe a batch of audio sources and store results in session state."""
-    try:
-        api_key = os.environ["DEEPGRAM_API_KEY"]
-    except KeyError:
-        st.error("Missing DEEPGRAM_API_KEY. Set it in a .env file at the project root.")
-        return
     client = DeepgramClient(api_key=api_key)
     responses = []
     for label, kwargs in items:
@@ -43,16 +40,16 @@ def _transcribe_batch(items: list[tuple[str, dict[str, object]]], method: str):
         st.session_state["responses"] = responses
 
 
-def _process_inputs(files: list[tuple[str, bytes]]):
+def _process_inputs(api_key: str, files: list[tuple[str, bytes]]):
     """Transcribe files with a shared client and store results in session state."""
     items = [(name, {"request": data}) for name, data in files]
-    _transcribe_batch(items, "transcribe_file")
+    _transcribe_batch(api_key, items, "transcribe_file")
 
 
-def _process_urls(urls: list[str]):
+def _process_urls(api_key: str, urls: list[str]):
     """Transcribe remote audio URLs with a shared client and store results in session state."""
     items = [(url, {"url": url}) for url in urls]
-    _transcribe_batch(items, "transcribe_url")
+    _transcribe_batch(api_key, items, "transcribe_url")
 
 
 def _parse_urls(text: str) -> tuple[list[str], list[str]]:
@@ -136,13 +133,7 @@ for name, response in st.session_state.get("responses", []):
     col2.metric("Duration", f"{response.metadata.duration:.1f}s")
     col3.metric("Words", len(alt.words))
     col4.metric("Language", channel.detected_language or "N/A")
-    st.text_area(
-        name,
-        value=alt.transcript,
-        height=300,
-        disabled=True,
-        label_visibility="collapsed",
-    )
+    st.code(alt.transcript, language=None, wrap_lines=True)
     st.download_button(
         "Download JSON",
         data=response.model_dump_json(indent=4),
