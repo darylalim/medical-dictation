@@ -209,3 +209,78 @@ class TestProcessUrls:
         mock_st.error.assert_called_once_with(
             "Transcription failed for https://example.com/bad.wav: timeout"
         )
+
+
+class TestDisplayResponse:
+    def test_offers_transcript_text_download(self, mock_deepgram_cls, mock_st):
+        mock_response = (
+            mock_deepgram_cls.return_value.listen.v1.media.transcribe_file.return_value
+        )
+        dl_txt, dl_json = MagicMock(), MagicMock()
+        mock_st.columns.side_effect = [
+            (MagicMock(), MagicMock(), MagicMock(), MagicMock()),
+            (dl_txt, dl_json),
+        ]
+
+        streamlit_app._display_response("test.wav", mock_response)
+
+        dl_txt.download_button.assert_called_once_with(
+            "Download Transcript",
+            data="Life moves pretty fast.",
+            file_name="test.wav.txt",
+            mime="text/plain",
+            key="download_txt_test.wav",
+        )
+
+    def test_offers_json_download(self, mock_deepgram_cls, mock_st):
+        mock_response = (
+            mock_deepgram_cls.return_value.listen.v1.media.transcribe_file.return_value
+        )
+        dl_txt, dl_json = MagicMock(), MagicMock()
+        mock_st.columns.side_effect = [
+            (MagicMock(), MagicMock(), MagicMock(), MagicMock()),
+            (dl_txt, dl_json),
+        ]
+
+        streamlit_app._display_response("test.wav", mock_response)
+
+        dl_json.download_button.assert_called_once_with(
+            "Download JSON",
+            data=mock_response.model_dump_json(indent=4),
+            file_name="test.wav.json",
+            mime="application/json",
+            key="download_json_test.wav",
+        )
+
+    def test_displays_transcript_text(self, mock_deepgram_cls, mock_st):
+        mock_response = (
+            mock_deepgram_cls.return_value.listen.v1.media.transcribe_file.return_value
+        )
+        mock_st.columns.side_effect = [
+            (MagicMock(), MagicMock(), MagicMock(), MagicMock()),
+            (MagicMock(), MagicMock()),
+        ]
+
+        streamlit_app._display_response("test.wav", mock_response)
+
+        mock_st.code.assert_called_once_with(
+            "Life moves pretty fast.", language=None, wrap_lines=True
+        )
+
+    def test_displays_metrics(self, mock_deepgram_cls, mock_st):
+        mock_response = (
+            mock_deepgram_cls.return_value.listen.v1.media.transcribe_file.return_value
+        )
+        col1, col2, col3, col4 = MagicMock(), MagicMock(), MagicMock(), MagicMock()
+        mock_st.columns.side_effect = [
+            (col1, col2, col3, col4),
+            (MagicMock(), MagicMock()),
+        ]
+
+        streamlit_app._display_response("test.wav", mock_response)
+
+        mock_st.subheader.assert_called_once_with("test.wav")
+        col1.metric.assert_called_once_with("Confidence", "98.0%")
+        col2.metric.assert_called_once_with("Duration", "3.5s")
+        col3.metric.assert_called_once_with("Words", 5)
+        col4.metric.assert_called_once_with("Language", "en")
