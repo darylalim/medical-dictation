@@ -5,13 +5,15 @@ Streamlit web app that transcribes medical dictation using Deepgram's Nova-3 Med
 ## Setup
 
 1. Install dependencies: `uv sync`
-2. Create `.env` at project root with `DEEPGRAM_API_KEY=your-key-here`
+2. (Optional) Create `.env` at project root with `DEEPGRAM_API_KEY=your-key-here` to pre-fill the sidebar
 
 ## Usage
 
 ```bash
 uv run streamlit run streamlit_app.py
 ```
+
+Enter your Deepgram API key in the sidebar. If a `.env` file is present, the key is pre-filled automatically.
 
 - **Record Audio** — record from microphone (max 10 minutes)
 - **Remote URL** — transcribe from HTTP/HTTPS URLs (up to 100 per batch)

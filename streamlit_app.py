@@ -67,6 +67,7 @@ api_key = st.sidebar.text_input(
     "Deepgram API Key",
     type="password",
     value=os.environ.get("DEEPGRAM_API_KEY", ""),
+    help="Get a free API key at https://deepgram.com",
 )
 
 tab_record, tab_url, tab_upload = st.tabs(["Record Audio", "Remote URL", "Upload File"])
