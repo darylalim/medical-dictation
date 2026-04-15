@@ -70,7 +70,7 @@ api_key = st.sidebar.text_input(
     help="Get a free API key at https://deepgram.com",
 )
 
-tab_record, tab_url, tab_upload = st.tabs(["Record Audio", "Remote URL", "Upload File"])
+tab_record, tab_url, tab_upload = st.tabs(["Record", "URL", "Upload"])
 
 with tab_upload:
     uploaded_files = st.file_uploader(
