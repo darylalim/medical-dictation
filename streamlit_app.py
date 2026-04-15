@@ -119,7 +119,7 @@ with tab_record:
 with tab_url:
     url_text = st.text_area(
         "Enter audio file URLs (one per line)",
-        placeholder="https://example.com/audio.wav",
+        placeholder="https://example.com/audio.mp3\nhttps://example.com/another.mp3",
         label_visibility="collapsed",
     )
     if st.button(
