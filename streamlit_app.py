@@ -12,7 +12,7 @@ MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024  # 2 GB
 MAX_RECORDING_SECONDS = 10 * 60  # 10 minutes
 MAX_UPLOADS = 100
 
-_AUDIO_EXTENSIONS = (".wav", ".mp3", ".m4a", ".flac", ".ogg")
+_AUDIO_EXTENSIONS = (".mp3", ".m4a", ".wav", ".flac", ".ogg")
 
 _TRANSCRIBE_OPTS = dict(
     model="nova-3-medical",
@@ -63,20 +63,23 @@ def _parse_urls(text: str) -> tuple[list[str], list[str]]:
 
 st.title("Nova Medical Pipeline")
 
-api_key = st.sidebar.text_input(
-    "Deepgram API Key",
-    type="password",
-    value=os.environ.get("DEEPGRAM_API_KEY", ""),
-    help="Get a free API key at https://deepgram.com",
-)
+api_key = os.environ.get("DEEPGRAM_API_KEY", "")
+if not api_key:
+    st.warning("Deepgram API key required. Get a free key at https://deepgram.com.")
+    api_key = st.text_input(
+        "Deepgram API Key",
+        type="password",
+        label_visibility="collapsed",
+    )
 
-tab_record, tab_url, tab_upload = st.tabs(["Record Audio", "Remote URL", "Upload File"])
+tab_record, tab_url, tab_upload = st.tabs(["Record", "URL", "Upload"])
 
 with tab_upload:
     uploaded_files = st.file_uploader(
         "Upload audio files",
-        type=["wav", "mp3", "m4a", "flac", "ogg"],
+        type=["mp3", "m4a", "wav", "flac", "ogg"],
         accept_multiple_files=True,
+        label_visibility="collapsed",
     )
     if st.button(
         "Transcribe",
@@ -98,7 +101,7 @@ with tab_upload:
                 _process_inputs(api_key, valid)
 
 with tab_record:
-    recording = st.audio_input("Record a dictation")
+    recording = st.audio_input("Record a dictation", label_visibility="collapsed")
     if (
         st.button(
             "Transcribe",
@@ -118,7 +121,8 @@ with tab_record:
 with tab_url:
     url_text = st.text_area(
         "Enter audio file URLs (one per line)",
-        placeholder="https://example.com/audio.wav",
+        placeholder="https://example.com/audio.mp3\nhttps://example.com/another.mp3",
+        label_visibility="collapsed",
     )
     if st.button(
         "Transcribe", disabled=not url_text.strip() or not api_key, key="transcribe_url"
