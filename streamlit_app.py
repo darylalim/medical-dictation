@@ -100,6 +100,8 @@ with tab_upload:
         "Transcribe",
         disabled=not uploaded_files or not api_key,
         key="transcribe_upload",
+        type="primary",
+        use_container_width=True,
     ):
         if len(uploaded_files) > MAX_UPLOADS:
             st.error(f"Too many files. Maximum is {MAX_UPLOADS} per batch.")
@@ -122,6 +124,8 @@ with tab_record:
             "Transcribe",
             disabled=recording is None or not api_key,
             key="transcribe_record",
+            type="primary",
+            use_container_width=True,
         )
         and recording is not None
     ):
@@ -140,7 +144,11 @@ with tab_url:
         label_visibility="collapsed",
     )
     if st.button(
-        "Transcribe", disabled=not url_text.strip() or not api_key, key="transcribe_url"
+        "Transcribe",
+        disabled=not url_text.strip() or not api_key,
+        key="transcribe_url",
+        type="primary",
+        use_container_width=True,
     ):
         valid, invalid = _parse_urls(url_text)
         if invalid:
