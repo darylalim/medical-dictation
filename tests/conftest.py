@@ -2,6 +2,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from tests.helpers import mock_word
+
 
 @pytest.fixture
 def mock_deepgram_cls():
@@ -9,21 +11,15 @@ def mock_deepgram_cls():
         mock_response = MagicMock()
         mock_response.model_dump_json.return_value = '{"results": "transcribed"}'
 
-        def _word(text: str, confidence: float):
-            w = MagicMock()
-            w.punctuated_word = text
-            w.confidence = confidence
-            return w
-
         alt = MagicMock()
         alt.transcript = "Life moves pretty fast really."
         alt.confidence = 0.98
         alt.words = [
-            _word("Life", 0.99),
-            _word("moves", 0.85),  # low — should be highlighted
-            _word("pretty", 0.97),
-            _word("fast", 0.80),  # low — should be highlighted
-            _word("really.", 0.96),
+            mock_word("Life", 0.99),
+            mock_word("moves", 0.85),  # low — should be highlighted
+            mock_word("pretty", 0.97),
+            mock_word("fast", 0.80),  # low — should be highlighted
+            mock_word("really.", 0.96),
         ]
 
         channel = MagicMock()
