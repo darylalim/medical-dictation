@@ -26,7 +26,7 @@ _TRANSCRIBE_OPTS = dict(
 _LOW_CONF_THRESHOLD = 0.90
 
 
-def _render_transcript_html(words) -> str:
+def _render_transcript_html(words: list[Any]) -> str:
     """Render Deepgram words as space-joined HTML, wrapping low-confidence words in <mark>."""
     parts = []
     for w in words:
