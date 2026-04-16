@@ -160,34 +160,40 @@ with tab_url:
             _process_urls(api_key, valid)
 
 
-def _display_response(name: str, response: Any) -> None:
-    """Display transcription results with metrics and download buttons."""
+def _display_response(name: str, response: Any, is_first: bool = False) -> None:
+    """Display a single transcription result inside a collapsible expander."""
     channel = response.results.channels[0]
     alt = channel.alternatives[0]
 
-    st.subheader(name)
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Confidence", f"{alt.confidence:.1%}")
-    col2.metric("Duration", f"{response.metadata.duration:.1f}s")
-    col3.metric("Words", len(alt.words))
-    col4.metric("Language", channel.detected_language or "N/A")
-    st.code(alt.transcript, language=None, wrap_lines=True)
-    dl_txt, dl_json = st.columns(2)
-    dl_txt.download_button(
-        "Download Transcript",
-        data=alt.transcript,
-        file_name=f"{name}.txt",
-        mime="text/plain",
-        key=f"download_txt_{name}",
-    )
-    dl_json.download_button(
-        "Download JSON",
-        data=response.model_dump_json(indent=4),
-        file_name=f"{name}.json",
-        mime="application/json",
-        key=f"download_json_{name}",
-    )
+    low_conf_count = sum(1 for w in alt.words if w.confidence < _LOW_CONF_THRESHOLD)
+
+    label = f"{name}  ·  {alt.confidence:.1%}"
+    with st.expander(label, expanded=is_first):
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Confidence", f"{alt.confidence:.1%}")
+        col2.metric("Duration", f"{response.metadata.duration:.1f}s")
+        col3.metric("Low-confidence words", low_conf_count)
+
+        st.markdown(_render_transcript_html(alt.words), unsafe_allow_html=True)
+
+        dl_txt, dl_json = st.columns(2)
+        dl_txt.download_button(
+            "Download .txt",
+            data=alt.transcript,
+            file_name=f"{name}.txt",
+            mime="text/plain",
+            type="primary",
+            key=f"download_txt_{name}",
+        )
+        dl_json.download_button(
+            "JSON",
+            data=response.model_dump_json(indent=4),
+            file_name=f"{name}.json",
+            mime="application/json",
+            type="tertiary",
+            key=f"download_json_{name}",
+        )
 
 
-for name, response in st.session_state.get("responses", []):
-    _display_response(name, response)
+for i, (name, response) in enumerate(st.session_state.get("responses", [])):
+    _display_response(name, response, is_first=(i == 0))
