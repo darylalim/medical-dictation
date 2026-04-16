@@ -9,10 +9,22 @@ def mock_deepgram_cls():
         mock_response = MagicMock()
         mock_response.model_dump_json.return_value = '{"results": "transcribed"}'
 
+        def _word(text: str, confidence: float):
+            w = MagicMock()
+            w.punctuated_word = text
+            w.confidence = confidence
+            return w
+
         alt = MagicMock()
-        alt.transcript = "Life moves pretty fast."
+        alt.transcript = "Life moves pretty fast really."
         alt.confidence = 0.98
-        alt.words = [MagicMock(), MagicMock(), MagicMock(), MagicMock(), MagicMock()]
+        alt.words = [
+            _word("Life", 0.99),
+            _word("moves", 0.85),  # low — should be highlighted
+            _word("pretty", 0.97),
+            _word("fast", 0.80),  # low — should be highlighted
+            _word("really.", 0.96),
+        ]
 
         channel = MagicMock()
         channel.alternatives = [alt]

@@ -233,7 +233,7 @@ class TestDisplayResponse:
 
         dl_txt.download_button.assert_called_once_with(
             "Download Transcript",
-            data="Life moves pretty fast.",
+            data="Life moves pretty fast really.",
             file_name="test.wav.txt",
             mime="text/plain",
             key="download_txt_test.wav",
@@ -271,7 +271,7 @@ class TestDisplayResponse:
         streamlit_app._display_response("test.wav", mock_response)
 
         mock_st.code.assert_called_once_with(
-            "Life moves pretty fast.", language=None, wrap_lines=True
+            "Life moves pretty fast really.", language=None, wrap_lines=True
         )
 
     def test_displays_metrics(self, mock_deepgram_cls, mock_st):
